@@ -6,7 +6,9 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "https://frontendd-sage-phi.vercel.app/", // Replace "*" with frontend URL for more security, e.g., "https://frontendd.vercel.app"
+}));
 app.use(express.json());
 
 const uploadDir = path.join(__dirname, "uploads");
