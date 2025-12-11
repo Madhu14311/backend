@@ -6,25 +6,28 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const cors = require("cors");
 
-app.use(cors({
-  origin: [
-    "https://frontendd-5fpno42ej-madhu14311s-projects.vercel.app",
-    "https://frontendd.vercel.app",
-    "http://localhost:3000"
-  ],
-  credentials: true,
-  methods: "GET,POST,PUT,DELETE",
-  allowedHeaders: "Content-Type,Authorization"
-}));
+// ✅ FIXED CORS
+app.use(
+  cors({
+    origin: [
+      "https://frontendd-5fpno42ej-madhu14311s-projects.vercel.app", // your real vercel URL
+      "https://bliss-2.onrender.com", // your render frontend
+      "https://frontendd.vercel.app",
+      "http://localhost:3000"
+    ],
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
 
 app.use(express.json());
 
+// Upload Folder
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
-
+// Multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => {
@@ -32,9 +35,10 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + "-" + file.originalname);
   },
 });
+
 const upload = multer({ storage });
 
-
+// ------------------- JOB APPLICATION ---------------------
 app.post("/formData", upload.single("file"), async (req, res) => {
   try {
     const { name, email, phone, job, message } = req.body;
@@ -44,13 +48,13 @@ app.post("/formData", upload.single("file"), async (req, res) => {
       service: "gmail",
       auth: {
         user: "blissmadhu123@gmail.com",
-        pass: "xmrgkjmhrihdunhg",    
+        pass: "xmrgkjmhrihdunhg",
       },
     });
 
     await transporter.sendMail({
       from: email,
-      to: "blissmadhu123@gmail.com", 
+      to: "blissmadhu123@gmail.com",
       subject: `Job Application - ${job}`,
       text: `
 Name: ${name}
@@ -59,12 +63,9 @@ Phone: ${phone}
 Job Position: ${job}
 Message: ${message}
       `,
-      attachments: [
-        {
-          filename: file.originalname,
-          path: file.path,
-        },
-      ],
+      attachments: file
+        ? [{ filename: file.originalname, path: file.path }]
+        : [],
     });
 
     res.status(200).json({ message: "Application submitted successfully!" });
@@ -73,17 +74,16 @@ Message: ${message}
   }
 });
 
-// ----------------- CONTACT FORM -----------------
+// ------------------- CONTACT FORM ---------------------
 app.post("/contact", async (req, res) => {
   try {
     const { name, email, phone, message } = req.body;
 
- 
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: "blissmadhu123@gmail.com",
-        pass: "xmrgkjmhrihdunhg",   
+        pass: "xmrgkjmhrihdunhg",
       },
     });
 
@@ -105,8 +105,5 @@ Message: ${message}
   }
 });
 
-
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
-});
+app.listen(5000, () => console.log("Server running on port 5000"));
 
