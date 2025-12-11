@@ -6,9 +6,19 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
+const cors = require("cors");
+
 app.use(cors({
-  origin: "*", 
+  origin: [
+    "https://frontendd-5fpno42ej-madhu14311s-projects.vercel.app",
+    "https://frontendd.vercel.app",
+    "http://localhost:3000"
+  ],
+  credentials: true,
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization"
 }));
+
 app.use(express.json());
 
 const uploadDir = path.join(__dirname, "uploads");
