@@ -7,7 +7,7 @@ const path = require("path");
 
 const app = express();
 app.use(cors({
-  origin: "https://frontendd-sage-phi.vercel.app/", // Replace "*" with frontend URL for more security, e.g., "https://frontendd.vercel.app"
+  origin: "*", 
 }));
 app.use(express.json());
 
